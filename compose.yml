@@ -1,0 +1,56 @@
+networks:
+  default:
+    name: matrix-network
+    driver: bridge
+    # IP address management
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.10.0/24"
+          gateway: "10.10.10.1"
+
+services:
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    networks:
+      default:
+        ipv4_address: 10.10.10.2
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+     - ./dbdata:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+  synapse:
+    image: matrixdotorg/synapse:latest
+    restart: unless-stopped
+    volumes:
+      - ./synapse:/data
+    networks:
+      default:
+        ipv4_address: 10.10.10.4
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.synapse.loadbalancer.server.port=${SYNAPSE_PORT}"
+      - "traefik.http.routers.synapse.rule=Host(`${SYNAPSE_SUBDOMAIN}`)"
+      - "traefik.http.routers.synapse.entrypoints=websecure"
+      - "traefik.http.routers.synapse.tls=true"
+      - "traefik.http.routers.synapse.tls.certresolver=default"
+
+  element:
+    image: vectorim/element-web:latest
+    restart: unless-stopped
+#    volumes:
+#      - ./element-config.json:/app/config.json
+    networks:
+      default:
+        ipv4_address: 10.10.10.3
+    labels:
+      - "traefik.http.routers.element.rule=Host(`${ELEMENT_SUBDOMAIN}`)"
+      - "traefik.http.routers.element.entrypoints=websecure"
+      - "traefik.http.routers.element.tls=true"
+      - "traefik.http.routers.element.tls.certresolver=default"

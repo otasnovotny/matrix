@@ -10,7 +10,7 @@ networks:
           gateway: "10.10.10.1"
 
 services:
-  db:
+  postgresdb:
     image: postgres:latest
     restart: unless-stopped
     networks:
@@ -19,7 +19,7 @@ services:
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
     volumes:
-     - ./dbdata:/var/lib/postgresql/data
+      - ./dbdata:/var/lib/postgresql/data
     env_file:
       - .env
 

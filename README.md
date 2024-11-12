@@ -5,6 +5,8 @@
 
 Setup your DNS records for `synapse.example.com` and `element.example.com` 
 
+Ensure your proxy (Traefik) has set entrypoint at port 8448.
+
 Clone repo and navigate to it.
 ```
 git clone git@github.com:otasnovotny/matrix.git && \

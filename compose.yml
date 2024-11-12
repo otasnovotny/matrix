@@ -37,7 +37,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.synapse.loadbalancer.server.port=${SYNAPSE_PORT}"
       - "traefik.http.routers.synapse.rule=Host(`${SYNAPSE_SUBDOMAIN}`)"
-      - "traefik.http.routers.synapse.entrypoints=websecure"
+      - "traefik.http.routers.synapse.entrypoints=websecure,matrix"
       - "traefik.http.routers.synapse.tls=true"
       - "traefik.http.routers.synapse.tls.certresolver=default"
 

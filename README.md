@@ -1,9 +1,9 @@
 # Matrix
-[Matrix](https://matrix.org/) server behind [Traefik](https://traefik.io/traefik/)
+This is a guide how to run dockerized [Matrix server](https://matrix.org/) behind [Traefik](https://traefik.io/traefik/)
 
 ## Server
 
-Setup your DNS records for `synapse.example.com` and `element.example.com` 
+Setup your DNS records for Synapse `matrix.example.com` and Element `element.example.com`. 
 
 Ensure your proxy (Traefik) has set entrypoint at port 8448.
 
@@ -13,25 +13,25 @@ git clone git@github.com:otasnovotny/matrix.git && \
 cd matrix
 ```
 
+### Configuration
+
 Create .env
 ```
 # with proper values!!!
 cp .env.template .env
 ```
 
-Generate a `homeserver.yaml` file
+Create `nginx.conf`
 ```
-docker compose run --rm synapse generate
-```
-
-Make writable for $USER
-```
-sudo chmod -R a+rw ./synapse/
+# replace example.com!!!
+cp nginx.conf.template nginx.conf
 ```
 
-Create a new user
+Create well-known files
 ```
-docker compose exec -it synapse register_new_matrix_user -c /data/homeserver.yaml http://localhost:8008
+# replace example.com!!!
+cp ./nginx/well-known/matrix/server.template ./nginx/well-known/matrix/server
+cp ./nginx/well-known/identity/server.template ./nginx/well-known/identity/server
 ```
 
 Run service
@@ -39,6 +39,26 @@ Run service
 docker compose up -d
 ```
 
-Check in browser your `synapse.example.com` and `element.example.com`
+Generate a `homeserver.yaml` file
+```
+docker compose run --rm synapse generate
+```
 
-Check your `synapse.example.com` instance on `https://federationtester.matrix.org/`
+Make writable for $USER if necessary
+```
+sudo chmod -R a+rw ./synapse/
+sudo chmod -R a+rw ./nginx/
+```
+
+Create a new user
+```
+docker compose exec -it synapse register_new_matrix_user -c /data/homeserver.yaml http://localhost:8008
+```
+
+Check in browser your `matrix.example.com` and `element.example.com`
+
+Check your `matrix.example.com` instance on `https://federationtester.matrix.org/`
+
+Clients
+
+Install one of [clients](https://matrix.org/ecosystem/clients/). 

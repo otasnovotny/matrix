@@ -1,21 +1,7 @@
-networks:
-  default:
-    name: matrix-network
-    driver: bridge
-    # IP address management
-    ipam:
-      driver: default
-      config:
-        - subnet: "10.10.10.0/24"
-          gateway: "10.10.10.1"
-
 services:
   postgresdb:
     image: postgres:latest
     restart: unless-stopped
-    networks:
-      default:
-        ipv4_address: 10.10.10.2
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
     volumes:
@@ -28,15 +14,12 @@ services:
     restart: unless-stopped
     volumes:
       - ./synapse:/data
-    networks:
-      default:
-        ipv4_address: 10.10.10.4
     env_file:
       - .env
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.synapse.loadbalancer.server.port=${SYNAPSE_PORT}"
-      - "traefik.http.routers.synapse.rule=Host(`${SYNAPSE_SUBDOMAIN}`)"
+      - "traefik.http.routers.synapse.rule=Host(`${SYNAPSE_SERVER_NAME}`)"
       - "traefik.http.routers.synapse.entrypoints=websecure,matrix"
       - "traefik.http.routers.synapse.tls=true"
       - "traefik.http.routers.synapse.tls.certresolver=default"
@@ -46,11 +29,21 @@ services:
     restart: unless-stopped
 #    volumes:
 #      - ./element-config.json:/app/config.json
-    networks:
-      default:
-        ipv4_address: 10.10.10.3
     labels:
-      - "traefik.http.routers.element.rule=Host(`${ELEMENT_SUBDOMAIN}`)"
+      - "traefik.http.routers.element.rule=Host(`${ELEMENT_SERVER_NAME}`)"
       - "traefik.http.routers.element.entrypoints=websecure"
       - "traefik.http.routers.element.tls=true"
       - "traefik.http.routers.element.tls.certresolver=default"
+
+  # Nginx to serve .well-known files
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/well-known:/usr/share/nginx/html/.well-known
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx.rule=Host(`${SYNAPSE_SERVER_NAME}`) && PathPrefix(`/.well-known`)"
+      - "traefik.http.routers.nginx.entrypoints=websecure"
+      - "traefik.http.routers.nginx.tls=true"
+      - "traefik.http.routers.nginx.tls.certresolver=default"

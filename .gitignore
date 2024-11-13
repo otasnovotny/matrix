@@ -1,2 +1,7 @@
-.env
+dbdata/
 synapse/
+
+.env
+nginx.conf
+nginx/well-known/matrix/server
+nginx/well-known/identity/server

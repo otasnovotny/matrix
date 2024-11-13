@@ -1,6 +1,9 @@
 # Matrix
 This is a guide how to run dockerized [Matrix server](https://matrix.org/) behind [Traefik](https://traefik.io/traefik/)
 
+If you don't know how to setup Traefik, check out my example of 
+[Traefik setup](https://github.com/otasnovotny/traefik).
+
 ## Server
 
 Setup your DNS records for Synapse `matrix.example.com` and Element `element.example.com`. 

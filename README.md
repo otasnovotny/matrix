@@ -1,9 +1,19 @@
 # Matrix
 This is a guide how to run dockerized [Matrix server](https://matrix.org/) behind [Traefik](https://traefik.io/traefik/)
 
-## Server
+If you don't know how to setup Traefik, check out my example of 
+[Traefik setup](https://github.com/otasnovotny/traefik).
+
+## DNS
 
 Setup your DNS records for Synapse `matrix.example.com` and Element `element.example.com`. 
+
+Setup SRV record:
+```
+_matrix._tcp.otasovo.cz	1800	SRV	Weight: 10, Port: 8448, Protocol: _tcp matrix.otasovo.cz
+```
+
+## Server
 
 Ensure your proxy (Traefik) has set entrypoint at port 8448.
 

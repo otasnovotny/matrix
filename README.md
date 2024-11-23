@@ -44,6 +44,21 @@ Generate a `homeserver.yaml` file
 docker compose run --rm synapse generate
 ```
 
+Set Postgres db instead of default sqlite3
+```
+database:
+  name: psycopg2
+  
+  # from .env
+  database: synapse
+  user: synapse
+  password: someSecret123
+  port: 5434
+  
+  # from compose.yml
+  host: postgresdb  
+```
+
 Make writable for $USER if necessary
 ```
 sudo chmod -R a+rw ./synapse/
